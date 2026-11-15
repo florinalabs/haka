@@ -1,0 +1,66 @@
+# n8n Workflow: YouTube → TikTok Auto-Posting
+# 
+# Trigger: New YouTube video uploaded
+# Flow: Extract thumbnail → Generate short hook → Post to TikTok
+
+name: "YouTube to TikTok Auto-Posting"
+type: "workflow"
+description: "Automatically post YouTube content to TikTok within 1 hour"
+
+trigger_config:
+  event_type: "webhook"
+  endpoint: "/webhooks/youtube-new-upload"
+  http_method: "POST"
+
+steps:
+  - node_id: "trigger-youtube-webhook"
+    type: "webhook-节点"
+    operation: "receive_webhook"
+    config:
+      description: "Receive YouTube upload notification"
+      expected_data_keys:
+        - video_url
+        - title
+        - thumbnail_url
+
+  - node_id: "extract-video-info"
+    type: "http-request"
+    operation: "get_youtube_metadata"
+    input_from: "{{trigger-youtube-webhook}}"
+    config:
+      youtube_api_key: "${YOUTUBE_API_KEY}"
+      video_id: "$video_id"
+
+  - node_id: "generate-tiktok-caption"
+    type: "ai-generator"
+    operation: "generate_tiktok_caption"
+    input_from: "{{extract-video-info}}"
+    config:
+      prompt_template: "Create a viral TikTok caption in Taglish about {{video_title}}. Keep it engaging, use relevant hashtags, and include the HAKA brand voice."
+      tone: "energetic, curious, Filipino-friendly"
+
+  - node_id: "crop-thumbnail-to-vertical"
+    type: "media-processor"
+    operation: "crop_to_9x16"
+    input_from: "{{extract-video-info}}"
+    config:
+      source_image: "$thumbnail_url"
+      target_aspect_ratio: "9:16"
+
+  - node_id: "schedule-tiktok-post"
+    type: "http-request"
+    operation: "post_to_tiktok_api"
+    input_from: "{{generate-tiktok-caption}}"
+    config:
+      username: "${TIKTOK_USERNAME}"
+      video_url: "$youtube_video_url"
+      caption_template: "🇵🇭 {{generated_caption}}\n\n#HAKA #TechPH #AI #Technology"
+      schedule_delay_hours: 1
+
+  - node_id: "notify-team"
+    type: "webhook"
+    operation: "send_notification"
+    input_from: "{{schedule-tiktok-post}}"
+    config:
+      webhook_url: "${SLACK_WEBHOOK_URL}"
+      message_template: "✅ TikTok post scheduled! \nVideo: {{video_title}}\nScheduled for: {{scheduled_time}}"

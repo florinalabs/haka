@@ -1,0 +1,10 @@
+# HAKA — Requirements
+# No external dependencies needed! 
+# Uses only Python standard library (json, datetime, random)
+
+# Optional: For web scraping and API integration
+requests>=2.31.0
+
+# Optional: For social media scheduling
+# python-twitter-api>=1.6.4
+# tweepy>=4.15.0

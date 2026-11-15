@@ -1,0 +1,42 @@
+**Type:** Automation Task  
+**Priority:** {{PRIORITY: medium}}  
+**Category:** n8n Workflow / Publishing  
+
+### Content Details
+- **Source Platform:** {{SOURCE_PLATFORM}}
+- **Content ID:** {{CONTENT_ID}}
+- **Published URL:** {{SOURCE_URL}}
+- **Target Platforms:** {{TARGET_PLATFORMS}}
+
+### Required Setup
+- [ ] Webhook endpoint created
+- [ ] API credentials configured securely
+- [ ] Test run completed successfully
+- [ ] Error handling tested and logged
+
+### Posting Schedule
+- **Immediate Posting:** {{YES|NO}}
+- **Scheduled Times (PH Time):**
+  - YouTube: {{SCHEDULE}}
+  - TikTok: {{SCHEDULE}}
+  - Instagram: {{SCHEDULE}}
+  - LinkedIn: {{SCHEDULE}}
+  - Facebook: {{SCHEDULE}}
+
+### Automation Settings
+```yaml
+workflow_id: cross-platform-pub-{{CONTENT_ID_SHORT}}
+trigger_type: webhook/manual
+error_handling: retry-3-attempts
+notification_channel: {{SLACK/DISCORD/EMAIL}}
+```
+
+### Test Results
+- [ ] Webhook test: {{PASS|PENDING}}
+- [ ] API authentication: {{PASS|PENDING}}
+- [ ] Content formatting check: {{PASS|PENDING}}
+
+---
+
+**Notes:** {{ADDITIONAL_NOTES}}  
+**Assigned To:** {{ASSIGNEE_NAME}}  

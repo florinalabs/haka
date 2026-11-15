@@ -1,0 +1,98 @@
+{
+  "brand": {
+    "name": "HAKA",
+    "tagline": "Isipin. Tuklasin. Umangat.",
+    "description": "Ideas That Move People & Business.",
+    "philosophy": "Understanding what's changing and discovering what comes next."
+  },
+  "audiences": {
+    "youth": {
+      "name": "YOUTH",
+      "segments": ["Gen Z", "Students", "Young Professionals", "Creators"],
+      "content_style": "Trendy, relatable, engaging",
+      "tone_keywords": ["fresh", "energetic", "authentic"]
+    },
+    "business": {
+      "name": "BUSINESS",
+      "segments": ["Entrepreneurs", "Startups", "SMEs", "Business Leaders"],
+      "content_style": "Practical, actionable, strategic",
+      "tone_keywords": ["professional", "insightful", "result-driven"]
+    },
+    "technology": {
+      "name": "TECHNOLOGY",
+      "segments": ["Professionals", "Tech Enthusiasts", "Innovators"],
+      "content_style": "Exploratory, future-focused",
+      "tone_keywords": ["curious", "innovative", "forward-thinking"]
+    },
+    "ai": {
+      "name": "ARTIFICIAL INTELLIGENCE",
+      "segments": ["Beginners", "Practitioners", "Researchers"],
+      "content_style": "Demystifying, hands-on",
+      "tone_keywords": ["accessible", "practical", "exciting"]
+    }
+  },
+  "content_pillars": {
+    "technology": {
+      "weight": 0.30,
+      "topics": ["Digital tools", "Gadgets", "Innovation", "Emerging trends"],
+      "target_audience": ["youth", "business", "technology"]
+    },
+    "artificial_intelligence": {
+      "weight": 0.30,
+      "topics": ["AI Tools", "Use Cases", "Automation", "Ethics"],
+      "target_audience": ["youth", "business", "ai", "all"]
+    },
+    "business": {
+      "weight": 0.25,
+      "topics": ["Startup tips", "Digital transformation", "Growth strategies"],
+      "target_audience": ["business", "entrepreneurs"]
+    },
+    "youth_lifestyle": {
+      "weight": 0.15,
+      "topics": ["Skills", "Culture", "Trends", "Future careers"],
+      "target_audience": ["youth", "students"]
+    }
+  },
+  "voice_guidelines": {
+    "language": "Taglish",
+    "tone": ["Modern", "Relatable", "Simple explanations", "Practical value", "Curiosity-driven"],
+    "avoid": ["Formal academic language", "Jargon without explanation", "Outdated references"],
+    "examples": {
+      "good": "'Ano ang mga AI tools na pwede mong gamitin para mag-double up ng productivity?'",
+      "bad": "'Ang Artificial Intelligence ay isang transformative technology na...'"
+    }
+  },
+  "growth_phases": {
+    "phase_1": {
+      "name": "Build Awareness",
+      "duration": "Now → Q2 2026",
+      "focus": ["Educational content", "Entertaining content", "Curiosity-driven topics"],
+      "metrics": ["Views", "Engagement rate", "Follower growth"]
+    },
+    "phase_2": {
+      "name": "Build Authority",
+      "duration": "Q3 2026 → Q4 2026",
+      "focus": ["Trusted Filipino source", "Expert collaborations", "Case studies"],
+      "metrics": ["Backlinks", "Partnerships", "Authority scores"]
+    },
+    "phase_3": {
+      "name": "Build Community",
+      "duration": "Q1 2027+",
+      "focus": ["Attract students & professionals", "Engagement-driven content", "Community challenges"],
+      "metrics": ["Community size", "Active members", "User-generated content"]
+    },
+    "phase_4": {
+      "name": "Business Ventures",
+      "duration": "Q2 2027+",
+      "focus": ["Brand partnerships", "Educational products", "Sponsorships"],
+      "metrics": ["Revenue streams", "ROI", "Market share"]
+    }
+  },
+  "current_phase": "phase_1",
+  "branding_status": {
+    "logo": "pending",
+    "colors": "pending",
+    "typography": "pending",
+    "social_identity": "pending"
+  }
+}

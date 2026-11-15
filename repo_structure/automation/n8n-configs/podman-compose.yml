@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: haka-n8n
+    ports:
+      - "5678:5678"
+    environment:
+      - N8N_HOST=your-domain.com
+      - N8N_PROTOCOL=https
+      - N8N_AUTH_USERNAME=n8n_admin
+      - N8N_AUTH_PASSWORD=${N8N_AUTH_PASSWORD}
+    volumes:
+      - ./workflows:/home/node/.n8n/workflows:ro
+      - ./credentials:/home/node/.n8n/credentials:ro
+      - ./data:/home/node/.n8n/data
+      - ./activation-logs:/home/node/.n8n/activation-logs
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "sh", "-c", "npx wait-on tcp://0.0.0.0:5678"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+# To run with Podman directly (without compose):
+# podman run -d \
+#   --name haka-n8n \
+#   -p 5678:5678 \
+#   -v $(pwd)/workflows:/home/node/.n8n/workflows:ro \
+#   -e N8N_HOST=your-domain.com \
+#   n8nio/n8n

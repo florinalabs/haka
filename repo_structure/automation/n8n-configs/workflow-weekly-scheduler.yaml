@@ -1,0 +1,89 @@
+# n8n Workflow: Weekly Content Scheduler
+#
+# Trigger: Every Friday at 2 PM PH time
+# Flow: Pull content queue → Format for each platform → Schedule posts
+
+name: "Weekly Content Scheduler"
+type: "workflow"
+description: "Automate weekly social media posting schedule"
+
+trigger_config:
+  event_type: "cron"
+  cron_schedule: "0 14 * * FRI"  # Friday at 2 PM UTC (convert to PH time)
+  timezone: "Asia/Manila"
+
+steps:
+  - node_id: "read-content-queue"
+    type: "database-query"
+    operation: "get_pending_posts"
+    config:
+      table: "content_queue"
+      filter: "status='pending' AND week_number = {{current_week}}"
+      order_by: "priority DESC, topic ASC"
+
+  - node_id: "format-youtube-content"
+    type: "string-transformer"
+    operation: "format_youtube_post"
+    input_from: "{{read-content-queue}}"
+    config:
+      template: "HAKA | {{topic}}\n\n{{description}}\n\n⏱️ Duration: {{duration_minutes}}min\n\n💡 What you'll learn:\n• Key point 1\n• Key point 2\n• Key point 3\n\n👇 COMMENT BELOW! Follow for more tech & AI tips!\n\n#HAKA #{{category}}"
+      add_timestamp: true
+
+  - node_id: "format-tiktok-content"
+    type: "string-transformer"
+    operation: "format_tiktok_post"
+    input_from: "{{read-content-queue}}"
+    config:
+      template: "🇵🇭 {{topic_short}}\n\n{{hook_text}} 🎯\n\n#HAKA #TechTips #Philippines"
+      add_emojis: true
+
+  - node_id: "format-instagram-content"
+    type: "string-transformer"
+    operation: "format_instagram_post"
+    input_from: "{{read-content-queue}}"
+    config:
+      template: "🇵🇭 {{topic_short}}\n\nSwipe → for more details!\n\n🔗 Link in bio\n#HAKA #TechPH #Innovation"
+
+  - node_id: "format-linkedin-content"
+    type: "string-transformer"
+    operation: "format_linkedin_post"
+    input_from: "{{read-content-queue}}"
+    config:
+      template: "{{topic}} — Filipino Perspective\n\nFrom Manila, with practical insights for Filipino entrepreneurs and professionals.\n\nKey takeaways:\n• Point 1\n• Point 2\n• Point 3\n\n💬 Let's discuss in comments!"
+
+  - node_id: "format-facebook-content"
+    type: "string-transformer"
+    operation: "format_facebook_post"
+    input_from: "{{read-content-queue}}"
+    config:
+      template: "🇵🇭 Welcome to HAKA! Learning about {{topic}} today!\n\n{{description_preview}}\n\nShare this with friends interested in tech & innovation!"
+
+  - node_id: "schedule-all-posts"
+    type: "scheduler-node"
+    operation: "batch_schedule_posts"
+    input_from: "{{format-youtube-content}}"
+    config:
+      platforms:
+        - name: "YouTube"
+          time_offset_hours: 9  # 2 PM + 9 = 11 PM PH time for evening uploads
+          frequency: "weekly-1st-tuesday"
+        - name: "TikTok"
+          time_offset_hours: 7   # 7 AM for commute traffic
+          frequency: "daily-morning"
+        - name: "Instagram"
+          time_offset_hours: 8   # 8 AM for morning scroll
+          frequency: "weekly-wednesday-friday"
+        - name: "LinkedIn"
+          time_offset_hours: 10  # 10 AM for business hours
+          frequency: "weekly-thursday"
+        - name: "Facebook"
+          time_offset_hours: 7   # 2 PM + 7 = 9 PM PH
+          frequency: "daily-evening"
+
+  - node_id: "send-completion-notification"
+    type: "webhook"
+    operation: "send_completion_alert"
+    input_from: "{{schedule-all-posts}}"
+    config:
+      webhook_url: "${SLACK_WEBHOOK_URL}"
+      message_template: "✅ Weekly content schedule set! Posts will publish automatically.\n\nContent this week:\n• {{content_count}} pieces queued\n• Platforms: YouTube, TikTok, Instagram, LinkedIn, Facebook"

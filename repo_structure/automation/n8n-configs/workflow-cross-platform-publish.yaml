@@ -1,0 +1,131 @@
+# n8n Workflow: Cross-Platform Content Sync
+#
+# Trigger: Content published on ANY platform (YouTube/TikTok/etc)
+# Flow: Extract metadata → Generate platform-specific content → Post to all platforms
+
+name: "Cross-Platform Content Sync"
+type: "workflow"
+description: "Publish content to all social platforms simultaneously"
+
+trigger_config:
+  event_type: "webhook"
+  endpoint: "/webhooks/cross-platform-publish"
+  http_method: "POST"
+
+steps:
+  - node_id: "trigger-webhook"
+    type: "webhook-节点"
+    operation: "receive_webhook"
+    config:
+      description: "Receive cross-platform publishing request"
+      expected_data_keys:
+        - source_platform
+        - content_url
+        - title
+        - thumbnail_url
+
+  - node_id: "extract-metadata"
+    type: "http-request"
+    operation: "fetch_full_content_metadata"
+    input_from: "{{trigger-webhook}}"
+    config:
+      source_url: "$content_url"
+      cache_enabled: true
+      cache_ttl: 3600
+
+  - node_id: "generate-youtube-caption"
+    type: "ai-generator"
+    operation: "generate_youtube_description"
+    input_from: "{{extract-metadata}}"
+    config:
+      prompt_template: "Generate a comprehensive YouTube description for {{content_title}}. Include:\n1. Engaging hook\n2. Key points covered\n3. Timestamps (if available)\n4. Call to action\n5. Relevant hashtags\n\nTone: Friendly, Taglish, practical value-focused."
+      min_length: 300
+      max_length: 2000
+
+  - node_id: "generate-tiktok-caption"
+    type: "ai-generator"
+    operation: "generate_tiktok_caption"
+    input_from: "{{extract-metadata}}"
+    config:
+      prompt_template: "Create a short, viral TikTok caption in Taglish about {{content_title}}. Make it engaging with trending hook style."
+      min_length: 50
+      max_length: 150
+
+  - node_id: "generate-instagram-caption"
+    type: "ai-generator"
+    operation: "generate_instagram_caption"
+    input_from: "{{extract-metadata}}"
+    config:
+      prompt_template: "Create an Instagram caption with visual storytelling appeal for {{content_title}}. Include emoji-rich text and carousel story suggestions."
+
+  - node_id: "generate-linkedin-caption"
+    type: "ai-generator"
+    operation: "generate_linkedin_post"
+    input_from: "{{extract-metadata}}"
+    config:
+      prompt_template: "Create a professional LinkedIn post about {{content_title}}. Focus on industry insights, business value, and Filipino context."
+
+  - node_id: "generate-facebook-caption"
+    type: "ai-generator"
+    operation: "generate_facebook_post"
+    input_from: "{{extract-metadata}}"
+    config:
+      prompt_template: "Create a Facebook post in friendly Taglish about {{content_title}}. Focus on community building and sharing."
+
+  - node_id: "create-youtube-post"
+    type: "http-request"
+    operation: "post_to_youtube_community"
+    input_from: "{{generate-youtube-caption}}"
+    config:
+      channel_id: "${YOUTUBE_CHANNEL_ID}"
+      content_type: "community_post"
+
+  - node_id: "create-tiktok-post"
+    type: "http-request"
+    operation: "post_to_tiktok"
+    input_from: "{{generate-tiktok-caption}}"
+    config:
+      username: "${TIKTOK_USERNAME}"
+      video_url: "$thumbnail_url"  # Use thumbnail for TikTok post
+
+  - node_id: "create-instagram-post"
+    type: "http-request"
+    operation: "post_to_instagram"
+    input_from: "{{generate-instagram-caption}}"
+    config:
+      media_type: "image"
+      image_url: "$thumbnail_url"
+
+  - node_id: "create-linkedin-post"
+    type: "http-request"
+    operation: "post_to_linkedin"
+    input_from: "{{generate-linkedin-caption}}"
+    config:
+      post_format: "text-with-image"
+      image_url: "$thumbnail_url"
+
+  - node_id: "create-facebook-post"
+    type: "http-request"
+    operation: "post_to_facebook"
+    input_from: "{{generate-facebook-caption}}"
+    config:
+      page_id: "${FACEBOOK_PAGE_ID}"
+
+  - node_id: "log-completion"
+    type: "database-write"
+    operation: "update_content_status"
+    input_from: "{{create-instagram-post}}"
+    config:
+      table: "content_queue"
+      update_fields:
+        status: "published"
+        published_to: ["YouTube", "TikTok", "Instagram", "LinkedIn", "Facebook"]
+        publish_timestamp: "{{current_timestamp}}"
+
+  - node_id: "send-completion-webhook"
+    type: "webhook"
+    operation: "send_completion_notification"
+    input_from: "{{log-completion}}"
+    config:
+      webhook_url: "${SLACK_WEBHOOK_URL}"
+      message_template: "✨ Cross-platform publish complete!\n\nSource: {{source_platform}}\nContent: {{content_title}}\nPlatforms: YouTube, TikTok, Instagram, LinkedIn, Facebook"
