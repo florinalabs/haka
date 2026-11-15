@@ -1,0 +1,123 @@
+@import "tailwindcss";
+
+/* Theme-aware color helper */
+:root {
+  --background: #ffffff;
+  --foreground: #000000;
+  --card-bg: #ffffff;
+  --border-color: rgba(0, 0, 0, 0.1);
+  --muted-foreground: rgba(0, 0, 0, 0.6);
+}
+
+.dark {
+  --background: #0a0a0a;
+  --foreground: #ededed;
+  --card-bg: #171717;
+  --border-color: rgba(255, 255, 255, 0.1);
+  --muted-foreground: rgba(237, 237, 237, 0.6);
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+html {
+  height: 100%;
+}
+
+body {
+  min-height: 100%;
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Theme toggle button styles */
+.theme-toggle-btn {
+  border-radius: 9999px;
+  background-color: rgba(255, 255, 255, 0.1);
+  padding: var(--spacing-3);
+  color: var(--foreground);
+  transition: background-color 0.2s ease;
+}
+
+.theme-toggle-btn:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Muted text */
+.text-light-muted {
+  color: rgba(var(--foreground), 0.35);
+}
+
+.text-dark-muted {
+  color: rgba(var(--muted-foreground), 0.6);
+}
+
+/* Theme-aware background classes */
+.bg-card {
+  background-color: var(--card-bg);
+}
+
+.bg-background {
+  background-color: var(--background);
+}
+
+@layer components {
+  /* Utility classes for HAKA brand colors */
+  .bg-haka-yellow {
+    background-color: #FFD700;
+  }
+
+  .text-haka-yellow {
+    color: #FFD700;
+  }
+
+  .border-haka-yellow {
+    border-color: #FFD700;
+  }
+
+  .hover\:bg-haka-yellow:hover {
+    background-color: #FFD700 !important;
+  }
+
+  .hover\:text-haka-yellow:hover {
+    color: #FFD700 !important;
+  }
+}
+
+@layer utilities {
+  /* Custom utility classes */
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .glass {
+    background: rgba(var(--background), 0.8);
+    backdrop-filter: blur(12px);
+  }
+
+  .gradient-radial {
+    background-image: radial-gradient(circle, var(--foreground) 0%, transparent 70%);
+  }
+
+  .gradient-linear-haka {
+    background: linear-gradient(135deg, #FFD700 0%, rgba(255, 215, 0, 0.1) 100%);
+  }
+
+  .text-shadow-subtle {
+    text-shadow: 0 2px 4px rgba(var(--foreground), 0.1);
+  }
+}
