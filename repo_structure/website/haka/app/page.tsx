@@ -11,7 +11,7 @@ import {
   TrendingUp,
 } from "lucide-react";
 
-import { CategoryCard } from "@/components/site/CategoryCard";
+import CategoryCard from "@/components/site/CategoryCard";
 
 const categories = [
   {

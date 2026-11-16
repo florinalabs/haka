@@ -11,7 +11,7 @@ interface CategoryCardProps {
   index?: number;
 }
 
-export function CategoryCard({
+export default function CategoryCard({
   title,
   description,
   icon: Icon,
